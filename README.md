@@ -2,5 +2,12 @@
 This repository includes source code for Deep Q Learning architecture implemented in Tensorflow library.
 
 #### Code Developer: [Ravin Kumar](https://mr-ravin.github.io)
+#### Requirements:
+- #### Tensorflow: 1.2
+- #### Python: 3    
 
-Will Soon Push the code ...
+### Training Steps:
+```python3
+python3 dqn.py
+```
+##### Note: This work can be used freely for academic research work and individual non-commercial projects, please do provide citation and/or deserved credits to this work. For Industrial and commercial use permission is required from the Author.
