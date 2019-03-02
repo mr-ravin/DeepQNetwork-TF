@@ -1,5 +1,6 @@
 import tensorflow as tf
 import numpy as np
+import math
 import random
 import gym
 import matplotlib.pyplot as plt
@@ -20,23 +21,22 @@ def get_prev_experience(lst,number_of_samples): ## retrieve sample from replay b
   if number_of_samples> len(lst):
     return random.sample(lst,len(lst))
   else:
-    return random.sample(lst,len(number_of_samples))
+    return random.sample(lst,number_of_samples)
 ### functions on replay buffer ###
 
 
-def train(batch_size,render=True): ## method to train 
-  max_memory=5000
-  num_episodes=300 ### Number of epochs
-  lst=[]           ### List containing <state,action,reward,next_state>
-  max_x_store=[]
-  reward_store=[]
-
-  ####Start: Environment related details
-  env_name='MountainCar-v0'
-  env=gym.make(env_name)
-  num_states=env.env.observation_space.shape[0]
-  num_actions=env.env.action_space.n
-  ####End: Environment related details
+def train(batch_size,game_name="MountainCar-v0",render=True): ## method to train 
+ max_memory=5000
+ num_episodes=300 ### Number of epochs
+ lst=[]           ### List containing <state,action,reward,next_state>
+ max_x_store=[]
+ reward_store=[]
+ ####Start: Environment related details
+ env_name=game_name
+ env=gym.make(env_name)
+ num_states=env.env.observation_space.shape[0]
+ num_actions=env.env.action_space.n
+ ####End: Environment related details
 
  with tf.Session() as sess:
   ### building graph
@@ -48,7 +48,7 @@ def train(batch_size,render=True): ## method to train
   loss=tf.losses.mean_squared_error(Qsa,logits)
   opt=tf.train.AdamOptimizer().minimize(loss)
   ### building graph
-  sess.run(tf.global_variables_initializer) ### initialize the neural network variables
+  sess.run(tf.global_variables_initializer()) ### initialize the neural network variables
   
   cnt=0
   while cnt<num_episodes:
@@ -59,6 +59,8 @@ def train(batch_size,render=True): ## method to train
     replay_state=env.reset()
     total_reward=0
     max_x=0
+    eps=MAX_EPSILON
+    steps=0
     while True:
       if render:
         env.render()
@@ -83,9 +85,38 @@ def train(batch_size,render=True): ## method to train
         max_x=replay_next_state[0]
       if replay_done:
         replay_next_state=None
-      lst=add_experience(lst,max_memory,(replay_state,replay_action,reward,replay_next_state))
+      lst=add_experience(lst,max_memory,(replay_state,replay_action,replay_reward,replay_next_state))
       #----###End: Adding experience to replay buffer
 
+      ###----#Start: Training using replay buffer
+      train_batch=get_prev_experience(lst,BATCH_SIZE)
+      train_states=np.array([val[0] for val in train_batch])
+      train_next_states=np.array([(np.zeros(num_states) if val[3] is None else val[3]) for val in train_batch])
+      train_qsa=sess.run(logits, feed_dict={states: train_states})
+      train_qsad=sess.run(logits,feed_dict={states:train_next_states})
+      train_x=np.zeros((len(train_batch),num_states))
+      train_y=np.zeros((len(train_batch),num_actions))
+      for idx,b in enumerate(train_batch):
+        tmp_state,tmp_action,tmp_reward,tmp_next_state=b[0],b[1],b[2],b[3]
+        current_q=train_qsa[idx]
+        if tmp_next_state is None:
+          current_q[tmp_action]=tmp_reward
+        else:
+          current_q[tmp_action]=tmp_reward+GAMMA*np.amax(train_qsad[idx]) # Q(s,a) = r + gamma * max(Q(s',a'))
+        train_x[idx]=tmp_state
+        train_y[idx]=current_q
+      sess.run(opt,feed_dict={states:train_x,Qsa:train_y}) ### TRAINING DONE HERE !!!
+      ###----#End; Training using replay buffer
+
+      steps=steps+1
+      eps=MIN_EPSILON + (MAX_EPSILON - MIN_EPSILON) * math.exp(-LAMBDA * steps)
+      replay_state=replay_next_state
+      total_reward=total_reward+replay_reward
+      if replay_done:
+        reward_store.append(total_reward)
+        max_x_store.append(max_x)
+        break     #### BREAK WHILE LOOP HERE
+    print("Step {}, Total reward: {}, Eps: {}".format(steps, total_reward, eps))
     cnt=cnt+1
 
   ####Start: plot visual graph
@@ -95,3 +126,4 @@ def train(batch_size,render=True): ## method to train
   plt.plot(max_x_score)
   plt.show()
   #####End: plot visual graph
+train(BATCH_SIZE)
