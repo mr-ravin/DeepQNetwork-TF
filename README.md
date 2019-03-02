@@ -5,7 +5,7 @@ This repository includes source code for implementing Deep Reinforcement Learnin
 #### Requirements:
 - #### Tensorflow: 1.2
 - #### Python: 3    
-- #### gym package
+- #### gym environment
 
 ### Training Steps:
 ```python3
