@@ -12,7 +12,7 @@ This repository includes source code for implementing Deep Reinforcement Learnin
 python3 dqn.py
 ```
 
-### Working Demonstration
+### Working Demonstration:
 A sample of working demonstration of DQN is provided.
 
 [![working demonstration](https://github.com/mr-ravin/DeepQNetwork-TF/blob/master/game.gif)]()
