@@ -65,9 +65,10 @@ def train(batch_size,game_name="MountainCar-v0",render=True): ## method to train
       if render:
         env.render()
       ####Start: select action based on random threshold
-      if random.random()<eps:
+      comp_val=random.random()
+      if comp_val<eps:
         replay_action=random.randint(0,num_actions-1)
-      if random.random()>=eps:
+      if comp_val>=eps:
         replay_action=np.argmax(sess.run(logits,feed_dict={states:replay_state.reshape(1,num_states)}))
       ####End: select action based on random threshold
       replay_next_state,replay_reward,replay_done,info=env.step(replay_action)
