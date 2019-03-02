@@ -124,7 +124,7 @@ def train(batch_size,game_name="MountainCar-v0",render=True): ## method to train
   plt.plot(reward_store)
   plt.show()
   plt.close("all")
-  plt.plot(max_x_score)
+  plt.plot(max_x_store)
   plt.show()
   #####End: plot visual graph
 train(BATCH_SIZE)
