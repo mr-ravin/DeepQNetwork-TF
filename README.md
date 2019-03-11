@@ -3,7 +3,7 @@ This repository includes source code for implementing Deep Reinforcement Learnin
 
 #### Code Developer: [Ravin Kumar](https://mr-ravin.github.io)
 #### Requirements:
-- #### Tensorflow: 1.2
+- #### Tensorflow: 1.12
 - #### Python: 3    
 - #### gym environment
 
