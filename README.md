@@ -17,4 +17,4 @@ A sample of working demonstration of DQN is provided. [Youtube](https://youtu.be
 
 [![working demonstration](https://github.com/mr-ravin/DeepQNetwork-TF/blob/master/game.gif)](https://youtu.be/ePAmif86iaA)
 
-##### Note: This work can be used freely for academic research work and individual non-commercial projects, please do provide citation and/or deserved credits to this work. For Industrial and commercial use permission is required from the Author.
+##### Note: This work can be used freely after providing citation and/or deserved credits to this work. Please use it at your own risk !!!
